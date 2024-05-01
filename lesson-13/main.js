@@ -1,15 +1,47 @@
 // main.js
 "use strict";
 
+const { name } = require("ejs");
+
 const port = 3000,
   express = require("express"),
   layouts = require("express-ejs-layouts"),
   homeController = require("./controllers/homeController"),
   errorController = require("./controllers/errorController"),
-  app = express();
-  // @TODO: 몽고DB 모듈의 요청
+  app = express(),
+  MongoDB = require("mongodb").MongoClient,
+  dbURL = 'mongodb+srv://ut-node:LHqb6PmC4FPXwL18@ut-node.kv6iahy.mongodb.net/?retryWrites=true&w=majority',
+  dbName ='ut-node';
 
 // @TODO: 로컬 MongoDB 데이터베이스 서버 연결 설정
+MongoDB.connect(dbURL, (error, client) => {
+  if(error) throw error;
+
+  let db = client.db(dbName);
+  db.collection("contacts")
+    .find()
+    .toArray((error, data) =>{
+      if (error, data) throw error;
+      console.log(data);
+    });
+  db.collection("contacts")
+    .insertOne({
+      name:"pill gyu",
+      job:"stu",
+      location:"g"
+    }, (error,result) => {
+      if (error, data) throw error;
+      console.log(result);
+    });
+})
+.then(() =>{
+  console.log("DB connected!")
+})
+.catch((error) =>{
+  console.log("DB connected failed!");
+  console.log(error);
+  process.exit(1);
+});
 
 
 app.set("port", process.env.PORT || port);
